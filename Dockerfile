@@ -111,6 +111,7 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
+RUN apt-get clean
 RUN git config --global user.email you@example.com
 RUN git config --global user.name "Your Name"
 
@@ -141,9 +142,9 @@ RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/10/main/pg_hba.conf && \
 # Crankshaft: CARTO Spatial Analysis extension for PostgreSQL
 RUN cd / && \
     curl https://bootstrap.pypa.io/get-pip.py | python && \
-    git clone https://github.com/CartoDB/crankshaft.git && \
+    git clone -b $CRANKSHAFT_VERSION --single-branch https://github.com/CartoDB/crankshaft.git && \
     cd /crankshaft && \
-    git checkout $CRANKSHAFT_VERSION && \
+    git checkout -b $CRANKSHAFT_VERSION && \
     make install && \
     # Numpy gets upgraded after scikit-learn is installed
     # make sure scikit-learn is compatible with currently installed numpy, by reinstalling
@@ -158,25 +159,25 @@ RUN service postgresql start && /bin/su postgres -c \
 ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
 
 # Install CartoDB API
-RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
+RUN git clone -b $SQLAPI_VERSION --single-branch git://github.com/CartoDB/CartoDB-SQL-API.git && \
     cd CartoDB-SQL-API && \
-    git checkout $SQLAPI_VERSION && \
+    git checkout -b $SQLAPI_VERSION && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm
 
 # Install Windshaft
-RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
+RUN git clone -b $WINDSHAFT_VERSION --single-branch git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
-    git checkout $WINDSHAFT_VERSION && \
+    git checkout -b $WINDSHAFT_VERSION && \
     npm install -g yarn@0.27.5 && \
     yarn install && \
     rm -r /tmp/npm-* /root/.npm && \
     mkdir logs
 
 # Install CartoDB
-RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
+RUN git clone -b $CARTODB_VERSION --single-branch --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
-    git checkout $CARTODB_VERSION && \
+    git checkout -b $CARTODB_VERSION && \
     # Install cartodb extension
     cd lib/sql && \
     PGUSER=postgres make install && \
