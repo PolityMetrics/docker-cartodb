@@ -144,7 +144,7 @@ RUN cd / && \
     curl https://bootstrap.pypa.io/get-pip.py | python && \
     git clone -b $CRANKSHAFT_VERSION --single-branch https://github.com/CartoDB/crankshaft.git && \
     cd /crankshaft && \
-    git checkout -b $CRANKSHAFT_VERSION && \
+    git checkout $CRANKSHAFT_VERSION && \
     make install && \
     # Numpy gets upgraded after scikit-learn is installed
     # make sure scikit-learn is compatible with currently installed numpy, by reinstalling
@@ -161,14 +161,14 @@ ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
 # Install CartoDB API
 RUN git clone -b $SQLAPI_VERSION --single-branch git://github.com/CartoDB/CartoDB-SQL-API.git && \
     cd CartoDB-SQL-API && \
-    git checkout -b $SQLAPI_VERSION && \
+    git checkout $SQLAPI_VERSION && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm
 
 # Install Windshaft
 RUN git clone -b $WINDSHAFT_VERSION --single-branch git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
-    git checkout -b $WINDSHAFT_VERSION && \
+    git checkout $WINDSHAFT_VERSION && \
     npm install -g yarn@0.27.5 && \
     yarn install && \
     rm -r /tmp/npm-* /root/.npm && \
@@ -177,7 +177,7 @@ RUN git clone -b $WINDSHAFT_VERSION --single-branch git://github.com/CartoDB/Win
 # Install CartoDB
 RUN git clone -b $CARTODB_VERSION --single-branch --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
-    git checkout -b $CARTODB_VERSION && \
+    git checkout $CARTODB_VERSION && \
     # Install cartodb extension
     cd lib/sql && \
     PGUSER=postgres make install && \
